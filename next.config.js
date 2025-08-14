@@ -7,10 +7,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   
-  // Configuração experimental para resolver erro de useSearchParams
-  experimental: {
-    missingSuspenseWithCSRBailout: false,
-  },
+  // Configurações experimentais removidas - usando dynamic import com ssr:false
   
   // Configurações para evitar conflitos com Vite
   webpack: (config, { isServer }) => {
