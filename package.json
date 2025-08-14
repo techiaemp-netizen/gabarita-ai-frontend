@@ -1,0 +1,21 @@
+{
+  "name": "gabarita-ai-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright install --with-deps && cross-env CI=true playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report",
+    "auto-git": "node ../auto-git-watcher.js",
+    "auto-git:start": "npm run auto-git",
+    "auto-git:bg": "nohup npm run auto-git > auto-git.log 2>&1 &"
+  }
