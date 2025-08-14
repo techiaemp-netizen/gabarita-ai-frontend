@@ -1,6 +1,12 @@
 import { Suspense } from 'react';
 import PlanosClient from './planos-client';
 
+// desliga SSG/ISR
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+// (opcional) evita cache de fetch
+export const fetchCache = 'default-no-store';
+
 /**
  * Página de Planos
  * 
@@ -9,7 +15,7 @@ import PlanosClient from './planos-client';
  */
 export default function PlanosPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando planos...</div>}>
+    <Suspense fallback={<div />}>
       <PlanosClient />
     </Suspense>
   );
