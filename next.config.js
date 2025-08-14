@@ -7,7 +7,10 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   
-  // Configurações experimentais removidas - não suportadas no Next.js 15
+  // Configuração experimental para resolver erro de useSearchParams
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
   
   // Configurações para evitar conflitos com Vite
   webpack: (config, { isServer }) => {
