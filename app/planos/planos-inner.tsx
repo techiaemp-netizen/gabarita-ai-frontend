@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
 
-export default function PlanosClient() {
+export default function PlanosInner() {
   const params = useSearchParams();
   const plano = useMemo(() => params.get('p') ?? 'default', [params]);
 
@@ -11,6 +11,7 @@ export default function PlanosClient() {
     <main>
       <h1>Planos</h1>
       <p>Plano selecionado: {plano}</p>
+      {/* manter todo o JSX/Lógica real da página aqui */}
     </main>
   );
 }
