@@ -1,11 +1,18 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function PlanosInner() {
-  const params = useSearchParams();
-  const plano = useMemo(() => params.get('p') ?? 'default', [params]);
+  const [plano, setPlano] = useState('default');
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const planoParam = urlParams.get('p');
+      setPlano(planoParam ?? 'default');
+    }
+  }, []);
 
   return (
     <main>
