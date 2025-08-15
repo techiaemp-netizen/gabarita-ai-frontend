@@ -1,19 +1,25 @@
 // app/planos/page.tsx
 
-import { Suspense } from 'react';
-import PlanosContent from './PlanosContent';
+'use client';
 
-// Este é um Componente de Servidor por padrão.
+import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
+
+// Importação dinâmica com SSR completamente desabilitado
+// Isso garante que o componente NUNCA seja renderizado no servidor
+const PlanosContent = dynamic(() => import('./PlanosContent'), {
+  ssr: false,
+  loading: () => <p>Carregando detalhes do plano...</p>
+});
+
+// Agora é um Client Component para permitir ssr: false
 export default function PlanosPage() {
   return (
     <main>
       <h1>Nossos Planos</h1>
 
-      {/* O Suspense Boundary é a chave.
-        Ele diz ao Next.js: "Renderize tudo estaticamente, mas enquanto o
-        'PlanosContent' não estiver pronto no cliente, mostre este 'fallback'".
-      */}
-      <Suspense fallback={<p>Carregando detalhes do plano...</p>}>
+      {/* Dupla proteção: Suspense + Dynamic Import com ssr: false */}
+      <Suspense fallback={<p>Inicializando página...</p>}>
         <PlanosContent />
       </Suspense>
 
