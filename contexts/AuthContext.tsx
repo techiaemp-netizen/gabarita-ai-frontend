@@ -128,10 +128,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       <AuthContext.Provider value={{
         user: null,
         loading: true,
-        login: async () => ({ success: false, message: 'Loading...' }),
-        signup: async () => ({ success: false, message: 'Loading...' }),
+        isClient: false,
+        login: async () => {},
+        signup: async () => {},
         logout: async () => {},
-        updateUser: async () => ({ success: false, message: 'Loading...' })
+        updateUser: async () => {}
       }}>
         {children}
       </AuthContext.Provider>
