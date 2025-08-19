@@ -1,25 +1,39 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import Navigation from '@/components/Navigation';
+import { useEffect, useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
-
-// Force dynamic rendering to avoid build-time issues
-export const dynamic = 'force-dynamic';
-
-export const metadata: Metadata = {
-  title: 'Gabarit-AI - Simulado Inteligente para o CNU 2025',
-  description: 'Plataforma de estudos com IA para o Concurso Nacional Unificado 2025. Simulados personalizados, análise de desempenho e gamificação.',
-  keywords: 'CNU 2025, concurso público, simulado, IA, estudos, gamificação',
-};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <html lang="pt-BR">
+        <body className={inter.className}>
+          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-2 text-gray-600">Carregando...</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    );
+  }
+
   return (
     <html lang="pt-BR">
       <body className={inter.className}>

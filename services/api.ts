@@ -329,6 +329,41 @@ class ApiService {
       };
     }
   }
+
+  // Novos métodos para ordem invertida (blocos primeiro)
+  async getBlocosCargos(): Promise<ApiResponse<{ blocos_cargos: Record<string, string[]>; todos_blocos: string[]; todos_cargos: string[] }>> {
+    try {
+      const response = await this.api.get('/api/opcoes/blocos-cargos');
+      if (response.data.sucesso) {
+        return { success: true, data: response.data.dados };
+      } else {
+        return { success: false, error: response.data.erro || 'Erro ao carregar opções' };
+      }
+    } catch (error: any) {
+      console.error('Erro ao carregar blocos e cargos:', error);
+      return { 
+        success: false, 
+        error: error.response?.data?.message || 'Erro ao carregar opções de blocos e cargos'
+      };
+    }
+  }
+
+  async getCargosPorBloco(bloco: string): Promise<ApiResponse<{ bloco: string; cargos: string[] }>> {
+    try {
+      const response = await this.api.get(`/api/opcoes/cargos/${encodeURIComponent(bloco)}`);
+      if (response.data.sucesso) {
+        return { success: true, data: response.data.dados };
+      } else {
+        return { success: false, error: response.data.erro || 'Bloco não encontrado' };
+      }
+    } catch (error: any) {
+      console.error('Erro ao carregar cargos por bloco:', error);
+      return { 
+        success: false, 
+        error: error.response?.data?.message || 'Erro ao carregar cargos para o bloco'
+      };
+    }
+  }
 }
 
 export const apiService = new ApiService();

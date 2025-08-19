@@ -12,17 +12,19 @@ const nextConfig = {
   experimental: {
     forceSwcTransforms: true,
   },
-  // Configurações para melhor compatibilidade
+  // Configuracoes para melhor compatibilidade
   swcMinify: true,
-  reactStrictMode: true,
+  reactStrictMode: false, // Desabilitar para evitar problemas de hidratação
+  // Configurações para resolver problemas de chunk loading
+  output: 'standalone',
   webpack: (config, { dev, isServer }) => {
-    // Configurar alias para resolução de módulos
+    // Configurar alias para resolucao de modulos
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': path.resolve(__dirname),
-      '@/components': path.resolve(__dirname, 'components'),
-      '@/contexts': path.resolve(__dirname, 'contexts'),
-      '@/services': path.resolve(__dirname, 'services'),
+      '@/components': path.resolve(__dirname, 'components'),  
+      '@/contexts': path.resolve(__dirname, 'contexts'),      
+      '@/services': path.resolve(__dirname, 'services'),      
       '@/types': path.resolve(__dirname, 'types'),
       '@/utils': path.resolve(__dirname, 'utils'),
       '@/config': path.resolve(__dirname, 'config'),

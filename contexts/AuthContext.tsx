@@ -12,9 +12,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     
     // Listener para mudanças no estado de autenticação do Firebase
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
@@ -29,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [mounted]);
 
   const loadUserProfile = async () => {
     try {
@@ -115,6 +121,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     logout,
     updateUser,
   };
+
+  // Evitar problemas de hidratação
+  if (!mounted) {
+    return (
+      <AuthContext.Provider value={{
+        user: null,
+        loading: true,
+        login: async () => ({ success: false, message: 'Loading...' }),
+        signup: async () => ({ success: false, message: 'Loading...' }),
+        logout: async () => {},
+        updateUser: async () => ({ success: false, message: 'Loading...' })
+      }}>
+        {children}
+      </AuthContext.Provider>
+    );
+  }
 
   return (
     <AuthContext.Provider value={value}>

@@ -22,21 +22,21 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [cargosOpcoes, setCargosOpcoes] = useState<string[]>([]);
   const [blocosOpcoes, setBlocosOpcoes] = useState<string[]>([]);
+  const [cargosOpcoes, setCargosOpcoes] = useState<string[]>([]);
   const [carregandoOpcoes, setCarregandoOpcoes] = useState(true);
   
   const { signup } = useAuth();
   const router = useRouter();
 
-  // Carregar opções de cargos
+  // Carregar opções de blocos (nova ordem)
   useEffect(() => {
     const carregarOpcoes = async () => {
       try {
-        const response = await apiService.getCargosEBlocos();
+        const response = await apiService.getBlocosCargos();
         
         if (response.success && response.data) {
-          setCargosOpcoes(response.data.todos_cargos);
+          setBlocosOpcoes(response.data.todos_blocos);
         } else {
           console.error('Erro ao carregar opções:', response.error);
         }
@@ -50,30 +50,30 @@ export default function SignupPage() {
     carregarOpcoes();
   }, []);
 
-  // Carregar blocos quando cargo for selecionado
+  // Carregar cargos quando bloco for selecionado
   useEffect(() => {
-    const carregarBlocos = async () => {
-      if (!formData.cargo) {
-        setBlocosOpcoes([]);
+    const carregarCargos = async () => {
+      if (!formData.bloco) {
+        setCargosOpcoes([]);
         return;
       }
 
       try {
-        const response = await apiService.getBlocosPorCargo(formData.cargo);
+        const response = await apiService.getCargosPorBloco(formData.bloco);
         
         if (response.success && response.data) {
-            setBlocosOpcoes(response.data.blocos);
+            setCargosOpcoes(response.data.cargos);
           } else {
-            console.error('Erro ao carregar blocos:', response.error);
+            console.error('Erro ao carregar cargos:', response.error);
           }
       } catch (error) {
-        console.error('Erro ao carregar blocos:', error);
-        setBlocosOpcoes([]);
+        console.error('Erro ao carregar cargos:', error);
+        setCargosOpcoes([]);
       }
     };
 
-    carregarBlocos();
-  }, [formData.cargo]);
+    carregarCargos();
+  }, [formData.bloco]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -88,8 +88,8 @@ export default function SignupPage() {
     setFormData(prev => ({
       ...prev,
       [name]: value,
-      // Limpar bloco quando cargo mudar
-      ...(name === 'cargo' && { bloco: '' })
+      // Limpar cargo quando bloco mudar
+      ...(name === 'bloco' && { cargo: '' })
     }));
   };
 
@@ -224,34 +224,6 @@ export default function SignupPage() {
               </div>
             </div>
 
-            {/* Cargo */}
-            <div>
-              <label htmlFor="cargo" className="block text-sm font-medium text-blue-700 mb-2">
-                Cargo
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Briefcase className="h-5 w-5 text-gray-400" />
-                </div>
-                <select
-                  id="cargo"
-                  name="cargo"
-                  required
-                  value={formData.cargo}
-                  onChange={handleSelectChange}
-                  disabled={carregandoOpcoes}
-                  className="block w-full pl-10 pr-3 py-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
-                >
-                  <option value="">Selecione um cargo</option>
-                  {cargosOpcoes.map((cargo) => (
-                    <option key={cargo} value={cargo}>
-                      {cargo}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
             {/* Bloco */}
             <div>
               <label htmlFor="bloco" className="block text-sm font-medium text-indigo-700 mb-2">
@@ -267,13 +239,41 @@ export default function SignupPage() {
                   required
                   value={formData.bloco}
                   onChange={handleSelectChange}
-                  disabled={!formData.cargo || blocosOpcoes.length === 0}
+                  disabled={carregandoOpcoes}
                   className="block w-full pl-10 pr-3 py-3 border-2 border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent appearance-none bg-white"
                 >
                   <option value="">Selecione um bloco</option>
                   {blocosOpcoes.map((bloco) => (
                     <option key={bloco} value={bloco}>
                       {bloco}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Cargo */}
+            <div>
+              <label htmlFor="cargo" className="block text-sm font-medium text-blue-700 mb-2">
+                Cargo
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Briefcase className="h-5 w-5 text-gray-400" />
+                </div>
+                <select
+                  id="cargo"
+                  name="cargo"
+                  required
+                  value={formData.cargo}
+                  onChange={handleSelectChange}
+                  disabled={!formData.bloco || cargosOpcoes.length === 0}
+                  className="block w-full pl-10 pr-3 py-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="">Selecione um cargo</option>
+                  {cargosOpcoes.map((cargo) => (
+                    <option key={cargo} value={cargo}>
+                      {cargo}
                     </option>
                   ))}
                 </select>
