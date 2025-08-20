@@ -1,4 +1,33 @@
+# Gabarita AI - Frontend
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Configuração de Ambiente
+
+### Desenvolvimento Local
+
+1. Copie o arquivo de exemplo de variáveis de ambiente:
+```bash
+cp .env.example .env.local
+```
+
+2. Configure a URL do backend no `.env.local`:
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
+3. Certifique-se de que o backend está rodando na porta 5000
+
+4. O frontend consumirá as APIs através de `${NEXT_PUBLIC_API_URL}/api/...`
+
+### Produção (Vercel)
+
+1. Configure a variável de ambiente no Vercel:
+```bash
+NEXT_PUBLIC_API_URL=https://seu-backend.onrender.com
+```
+
+2. **Importante**: Sempre reinicie o frontend após alterar variáveis de ambiente
 
 ## Getting Started
 
