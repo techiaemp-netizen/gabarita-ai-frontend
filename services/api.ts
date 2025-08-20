@@ -14,21 +14,14 @@ class ApiService {
   private api: any;
 
   constructor() {
-    // Safe fallback for environment variables during build
-    const getApiBaseUrl = () => {
-      if (typeof window !== 'undefined') {
-        // Runtime - use environment variables
-        return process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'https://gabarita-ai-backend.onrender.com';
-      }
-      // Build time - use safe fallback
-      return 'https://gabarita-ai-backend.onrender.com';
-    };
-
+    const baseURL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://gabarita-ai-backend.onrender.com';
+    
     this.api = axios.create({
-      baseURL: getApiBaseUrl(),
+      baseURL,
       headers: {
         'Content-Type': 'application/json',
       },
+      timeout: 10000,
     });
 
     // Interceptor para adicionar token de autenticação
@@ -58,7 +51,7 @@ class ApiService {
   // Health Check
   async healthCheck(): Promise<ApiResponse<any>> {
     try {
-      const response = await this.api.get('/health');
+      const response = await this.api.get('/api/health');
       return { success: true, data: response.data };
     } catch (error) {
       return { success: false, error: 'Erro ao verificar status da API' };
@@ -299,10 +292,11 @@ class ApiService {
   async getCargosEBlocos(): Promise<ApiResponse<{ todos_cargos: string[]; todos_blocos: string[]; cargos_blocos: Record<string, string[]> }>> {
     try {
       const response = await this.api.get('/api/opcoes/cargos-blocos');
-      if (response.data.sucesso) {
+      // O backend retorna { dados: {...} } diretamente
+      if (response.data && response.data.dados) {
         return { success: true, data: response.data.dados };
       } else {
-        return { success: false, error: response.data.erro || 'Erro ao carregar opções' };
+        return { success: false, error: 'Dados não encontrados na resposta' };
       }
     } catch (error: any) {
       console.error('Erro ao carregar cargos e blocos:', error);
@@ -316,7 +310,8 @@ class ApiService {
   async getBlocosPorCargo(cargo: string): Promise<ApiResponse<{ cargo: string; blocos: string[] }>> {
     try {
       const response = await this.api.get(`/api/opcoes/blocos/${encodeURIComponent(cargo)}`);
-      if (response.data.sucesso) {
+      // O backend retorna { dados: {...} } diretamente
+      if (response.data && response.data.dados) {
         return { success: true, data: response.data.dados };
       } else {
         return { success: false, error: response.data.erro || 'Cargo não encontrado' };
@@ -337,7 +332,7 @@ class ApiService {
       if (response.data.sucesso) {
         return { success: true, data: response.data.dados };
       } else {
-        return { success: false, error: response.data.erro || 'Erro ao carregar opções' };
+        return { success: false, error: 'Dados não encontrados na resposta' };
       }
     } catch (error: any) {
       console.error('Erro ao carregar blocos e cargos:', error);
