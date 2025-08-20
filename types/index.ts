@@ -13,6 +13,7 @@ export interface User {
   plan: 'free' | 'premium' | 'pro';
   createdAt: string;
   updatedAt: string;
+  questionsAnswered: number;
 }
 
 export interface Question {

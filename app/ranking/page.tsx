@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { apiService } from '@/services/api';
 import { RankingEntry } from '@/types';
 import { Trophy, Medal, Award, Crown, Star, TrendingUp } from 'lucide-react';
@@ -97,12 +97,12 @@ export default function RankingPage() {
                 <span className="text-white font-bold">?</span>
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">{user.name}</h3>
-                <p className="text-sm text-gray-600">Nível {user.level} • {user.xp.toLocaleString()} XP</p>
+                <h3 className="font-medium text-gray-900">{user?.name || 'Usuário'}</h3>
+                <p className="text-sm text-gray-600">Nível {user?.level || 0} • {user?.xp?.toLocaleString() || '0'} XP</p>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-lg font-bold text-blue-600">{user.accuracy}%</div>
+              <div className="text-lg font-bold text-blue-600">{user?.accuracy || 0}%</div>
               <div className="text-sm text-gray-600">Precisão</div>
             </div>
           </div>
@@ -146,7 +146,7 @@ export default function RankingPage() {
               <div 
                 key={entry.userId} 
                 className={`px-6 py-4 hover:bg-gray-50 transition-colors ${
-                  entry.userId === user.id ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                  entry.userId === user?.id ? 'bg-blue-50 border-l-4 border-blue-500' : ''
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -164,7 +164,7 @@ export default function RankingPage() {
                     <div>
                       <h3 className="font-medium text-gray-900">
                         {entry.userName}
-                        {entry.userId === user.id && (
+                        {entry.userId === user?.id && (
                           <span className="ml-2 text-sm text-blue-600 font-medium">(Você)</span>
                         )}
                       </h3>

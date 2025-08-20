@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { apiService } from '@/services/api';
 import { Eye, EyeOff, User, Mail, Lock, CreditCard, Briefcase, Building } from 'lucide-react';
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from 'next/image';
-import { useAuth } from '../utils/auth';
+import { useAuth } from '../contexts/AuthContext';
 import { Menu } from 'lucide-react';
 
 /**

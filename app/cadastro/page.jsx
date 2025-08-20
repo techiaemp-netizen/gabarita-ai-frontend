@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../utils/auth';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -339,35 +339,6 @@ export default function CadastroPage() {
             </div>
 
             <div>
-              <label htmlFor="cargo" className="block text-sm font-medium text-gray-700 mb-1">
-                Cargo
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                  💼
-                </span>
-                <select
-                  id="cargo"
-                  name="cargo"
-                  value={formData.cargo}
-                  onChange={handleInputChange}
-                  disabled={carregandoOpcoes}
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.cargo ? 'border-red-500' : 'border-gray-300'} ${carregandoOpcoes ? 'bg-gray-100' : ''}`}
-                >
-                  <option value="">Selecione um cargo</option>
-                  {cargosOpcoes.map((cargo) => (
-                    <option key={cargo} value={cargo}>
-                      {cargo}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {errors.cargo && (
-                <p className="text-red-500 text-sm mt-1">{errors.cargo}</p>
-              )}
-            </div>
-
-            <div>
               <label htmlFor="bloco" className="block text-sm font-medium text-gray-700 mb-1">
                 Bloco
               </label>
@@ -396,6 +367,35 @@ export default function CadastroPage() {
               )}
               {!formData.cargo && (
                 <p className="text-gray-500 text-sm mt-1">Selecione um cargo primeiro</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="cargo" className="block text-sm font-medium text-gray-700 mb-1">
+                Cargo
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  💼
+                </span>
+                <select
+                  id="cargo"
+                  name="cargo"
+                  value={formData.cargo}
+                  onChange={handleInputChange}
+                  disabled={carregandoOpcoes}
+                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.cargo ? 'border-red-500' : 'border-gray-300'} ${carregandoOpcoes ? 'bg-gray-100' : ''}`}
+                >
+                  <option value="">Selecione um cargo</option>
+                  {cargosOpcoes.map((cargo) => (
+                    <option key={cargo} value={cargo}>
+                      {cargo}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {errors.cargo && (
+                <p className="text-red-500 text-sm mt-1">{errors.cargo}</p>
               )}
             </div>
 

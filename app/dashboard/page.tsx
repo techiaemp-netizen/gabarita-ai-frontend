@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { apiService } from '@/services/api';
 import { Performance } from '@/types';
 import { 
@@ -65,7 +65,7 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Olá, {user.name.split(' ')[0]}! 👋
+            Olá, {user && typeof user === 'object' && 'name' in user ? (user as any).name.split(' ')[0] : 'Usuário'}! 👋
           </h1>
           <p className="text-gray-600">
             Bem-vindo de volta ao seu painel de estudos para o CNU 2025
@@ -78,7 +78,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-100 text-sm">Nível Atual</p>
-                <p className="text-3xl font-bold">{user.level}</p>
+                <p className="text-3xl font-bold">{user && typeof user === 'object' && 'level' in user ? (user as any).level : 0}</p>
               </div>
               <Star className="h-8 w-8 text-blue-200" />
             </div>
@@ -88,7 +88,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-green-100 text-sm">XP Total</p>
-                <p className="text-3xl font-bold">{user.xp.toLocaleString()}</p>
+                <p className="text-3xl font-bold">{user && typeof user === 'object' && 'xp' in user ? (user as any).xp.toLocaleString() : '0'}</p>
               </div>
               <Zap className="h-8 w-8 text-green-200" />
             </div>
@@ -98,7 +98,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-100 text-sm">Taxa de Acerto</p>
-                <p className="text-3xl font-bold">{user.accuracy}%</p>
+                <p className="text-3xl font-bold">{user && typeof user === 'object' && 'accuracy' in user ? (user as any).accuracy : 0}%</p>
               </div>
               <Target className="h-8 w-8 text-purple-200" />
             </div>
@@ -238,7 +238,7 @@ export default function DashboardPage() {
         )}
 
         {/* Plan Status */}
-        {user.plan === 'free' && (
+        {user && typeof user === 'object' && 'plan' in user && (user as any).plan === 'free' && (
           <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-6 text-white">
             <div className="flex items-center justify-between">
               <div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { User, Mail, CreditCard, Save, Edit, LogOut } from 'lucide-react';
 
 export default function PerfilPage() {

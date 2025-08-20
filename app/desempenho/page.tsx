@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { apiService } from '@/services/api';
 import { Performance } from '@/types';
 import { BarChart3, TrendingUp, Target, Clock, Calendar, Award } from 'lucide-react';

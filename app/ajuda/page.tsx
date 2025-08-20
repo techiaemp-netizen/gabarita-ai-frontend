@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { User } from '../../types';
 import { 
   HelpCircle, 
   MessageCircle, 
@@ -162,7 +163,7 @@ export default function AjudaPage() {
                   </label>
                   <input
                     type="text"
-                    defaultValue={user?.name || ''}
+                    defaultValue={user && typeof user === 'object' && 'name' in user ? (user as any).name || '' : ''}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -172,7 +173,7 @@ export default function AjudaPage() {
                   </label>
                   <input
                     type="email"
-                    defaultValue={user?.email || ''}
+                    defaultValue={user && typeof user === 'object' && 'email' in user ? (user as any).email || '' : ''}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
