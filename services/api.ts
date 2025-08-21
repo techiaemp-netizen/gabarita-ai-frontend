@@ -329,6 +329,7 @@ class ApiService {
   async getBlocosCargos(): Promise<ApiResponse<{ blocos_cargos: Record<string, string[]>; todos_blocos: string[]; todos_cargos: string[] }>> {
     try {
       const response = await this.api.get('/api/opcoes/blocos-cargos');
+      console.log('🔍 Resposta bruta da API:', response.data);
       if (response.data.sucesso) {
         return { success: true, data: response.data.dados };
       } else {
