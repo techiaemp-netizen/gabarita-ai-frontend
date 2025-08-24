@@ -41,17 +41,22 @@ export default function CadastroPage() {
   // Carregar opções de cargos e blocos
   useEffect(() => {
     const carregarOpcoes = async () => {
+      console.log('🔄 Iniciando carregamento de cargos e blocos...');
       try {
         const response = await apiService.getCargosEBlocos();
+        console.log('📥 Resposta da API getCargosEBlocos:', response);
         
         if (response.success && response.data) {
+           console.log('✅ Dados carregados com sucesso:', response.data);
+           console.log('📋 Cargos disponíveis:', response.data.todos_cargos);
            setCargosOpcoes(response.data.todos_cargos);
          } else {
-           console.error('Erro ao carregar opções:', response.error);
+           console.error('❌ Erro ao carregar opções:', response.error);
          }
       } catch (error) {
-        console.error('Erro ao carregar opções:', error);
+        console.error('💥 Erro ao carregar opções:', error);
       } finally {
+        console.log('🏁 Finalizando carregamento de opções');
         setCarregandoOpcoes(false);
       }
     };
@@ -63,21 +68,25 @@ export default function CadastroPage() {
   useEffect(() => {
     const carregarBlocos = async () => {
       if (!formData.cargo) {
+        console.log('🚫 Nenhum cargo selecionado, limpando blocos');
         setBlocosOpcoes([]);
         return;
       }
 
+      console.log('🔄 Carregando blocos para o cargo:', formData.cargo);
       try {
         const response = await apiService.getBlocosPorCargo(formData.cargo);
+        console.log('📥 Resposta da API getBlocosPorCargo:', response);
         
         if (response.success && response.data) {
+           console.log('✅ Blocos carregados com sucesso:', response.data.blocos);
            setBlocosOpcoes(response.data.blocos);
          } else {
+           console.error('❌ Erro ao carregar blocos:', response.error);
            setBlocosOpcoes([]);
-           console.error('Erro ao carregar blocos:', response.error);
          }
       } catch (error) {
-        console.error('Erro ao carregar blocos:', error);
+        console.error('💥 Erro ao carregar blocos:', error);
         setBlocosOpcoes([]);
       }
     };
@@ -129,8 +138,16 @@ export default function CadastroPage() {
   const validateForm = () => {
     const newErrors = {};
 
+    console.log('Validando formulário - dados atuais:', formData);
+    console.log('Campo nomeCompleto:', `"${formData.nomeCompleto}"`);
+    console.log('Campo nomeCompleto após trim:', `"${formData.nomeCompleto.trim()}"`);
+    console.log('Teste !formData.nomeCompleto.trim():', !formData.nomeCompleto.trim());
+
     if (!formData.nomeCompleto.trim()) {
+      console.log('❌ Campo nomeCompleto falhou na validação');
       newErrors.nomeCompleto = 'Nome completo é obrigatório';
+    } else {
+      console.log('✅ Campo nomeCompleto passou na validação');
     }
 
     if (!formData.cpf.trim()) {
@@ -196,28 +213,39 @@ export default function CadastroPage() {
       
       // 4. Preparar dados para envio ao backend
       const dadosCadastro = {
-        nomeCompleto: formData.nomeCompleto,
+        nome: formData.nomeCompleto, // Backend espera 'nome', não 'nomeCompleto'
         cpf: formData.cpf.replace(/\D/g, ''), // Remove formatação do CPF
         email: formData.email,
+        senha: formData.senha,
         cargo: formData.cargo,
         bloco: formData.bloco,
         firebaseUid: firebaseUser.uid
       };
 
       console.log('Enviando dados do cadastro para backend:', dadosCadastro);
+      console.log('Token Firebase:', token);
       
       // 5. Enviar dados para o backend com token de autenticação
       const response = await apiService.signup(dadosCadastro, token);
       
+      console.log('Resposta do backend:', response);
+      
       if (response.success) {
+        console.log('Cadastro realizado com sucesso!');
         // Salvar token no localStorage
         localStorage.setItem('authToken', token);
         
         // Redirecionar para dashboard
         router.push('/dashboard?message=Cadastro realizado com sucesso!');
       } else {
+        console.error('Erro no backend:', response.error);
         // Se falhou no backend, deletar conta do Firebase
-        await firebaseUser.delete();
+        try {
+          await firebaseUser.delete();
+          console.log('Conta Firebase deletada após erro no backend');
+        } catch (deleteError) {
+          console.error('Erro ao deletar conta Firebase:', deleteError);
+        }
         setErrors({ submit: response.error || 'Erro ao criar conta. Tente novamente.' });
       }
     } catch (error) {

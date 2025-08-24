@@ -14,7 +14,7 @@ class ApiService {
   private api: any;
 
   constructor() {
-    const baseURL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://gabarita-ai-backend.onrender.com';
+    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'https://gabarita-ai-backend.onrender.com';
     
     this.api = axios.create({
       baseURL,
@@ -75,18 +75,33 @@ class ApiService {
     }
   }
 
-  async signup(userData: Partial<User> & { password: string }): Promise<ApiResponse<{ user: User; token: string }>> {
+  async signup(userData: Partial<User> & { password: string }, firebaseToken?: string): Promise<ApiResponse<{ user: User; token: string }>> {
     try {
-      const response = await this.api.post('/api/auth/signup', userData);
-      const { user, token } = response.data;
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('authToken', token);
+      const config = firebaseToken ? {
+        headers: {
+          'Authorization': `Bearer ${firebaseToken}`
+        }
+      } : {};
+      
+      const response = await this.api.post('/api/auth/cadastro', userData, config);
+      console.log('Resposta bruta do backend:', response.data);
+      
+      // O backend retorna { sucesso: true, token: string, usuario: User }
+      const { sucesso, token, usuario } = response.data;
+      
+      if (sucesso && token && usuario) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('authToken', token);
+        }
+        return { success: true, data: { user: usuario, token } };
+      } else {
+        return { success: false, error: 'Resposta inválida do servidor' };
       }
-      return { success: true, data: { user, token } };
     } catch (error: any) {
+      console.error('Erro na API signup:', error.response?.data || error.message);
       return { 
         success: false, 
-        error: error.response?.data?.message || 'Erro ao criar conta' 
+        error: error.response?.data?.message || error.response?.data?.erro || 'Erro ao criar conta' 
       };
     }
   }
@@ -330,7 +345,7 @@ class ApiService {
     try {
       const response = await this.api.get('/api/opcoes/blocos-cargos');
       console.log('🔍 Resposta bruta da API:', response.data);
-      if (response.data.sucesso) {
+      if (response.data && response.data.dados) {
         return { success: true, data: response.data.dados };
       } else {
         return { success: false, error: 'Dados não encontrados na resposta' };
@@ -347,7 +362,7 @@ class ApiService {
   async getCargosPorBloco(bloco: string): Promise<ApiResponse<{ bloco: string; cargos: string[] }>> {
     try {
       const response = await this.api.get(`/api/opcoes/cargos/${encodeURIComponent(bloco)}`);
-      if (response.data.sucesso) {
+      if (response.data && response.data.dados) {
         return { success: true, data: response.data.dados };
       } else {
         return { success: false, error: response.data.erro || 'Bloco não encontrado' };

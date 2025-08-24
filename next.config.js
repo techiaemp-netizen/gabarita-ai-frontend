@@ -5,14 +5,14 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:5000/api/:path*',
-      },
-    ];
-  },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/api/:path*',
+  //       destination: 'http://localhost:5000/api/:path*',
+  //     },
+  //   ];
+  // },
   images: {
     unoptimized: true,
   },
@@ -24,7 +24,7 @@ const nextConfig = {
   swcMinify: true,
   reactStrictMode: false, // Desabilitar para evitar problemas de hidratação
   // Configurações para resolver problemas de chunk loading
-  output: 'standalone',
+  // output: 'standalone', // Removido para evitar problemas de chunk loading
   webpack: (config, { dev, isServer }) => {
     // Configurar alias para resolucao de modulos
     config.resolve.alias = {
