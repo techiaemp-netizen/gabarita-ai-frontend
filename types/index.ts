@@ -2,18 +2,20 @@
 
 export interface User {
   id: string;
-  name: string;
+  nome: string;
+  name?: string; // Alias para nome, usado em alguns componentes
   email: string;
   cpf?: string;
   cargo?: string;
   bloco?: string;
-  level: number;
-  xp: number;
-  accuracy: number;
-  plan: 'free' | 'premium' | 'pro';
-  createdAt: string;
-  updatedAt: string;
-  questionsAnswered: number;
+  level?: number;
+  xp?: number;
+  accuracy?: number;
+  plano: string;
+  status?: string;
+  created_at: string;
+  updated_at: string;
+  questionsAnswered?: number;
 }
 
 export interface Question {
@@ -105,6 +107,7 @@ export interface AuthContextType {
   signup: (userData: Partial<User> & { password: string }) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => Promise<void>;
+  simulateAuth: () => void;
 }
 
 export interface ApiResponse<T> {

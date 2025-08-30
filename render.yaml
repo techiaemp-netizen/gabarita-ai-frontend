@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: gabarita-ai-frontend
+    env: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: PORT
+        generateValue: true
+      - key: NEXT_PUBLIC_API_URL
+        value: https://gabarita-ai-backend.onrender.com
+      - key: NEXT_PUBLIC_FRONTEND_URL
+        value: https://gabarita-ai-frontend.onrender.com
+      - key: NEXT_PUBLIC_FIREBASE_API_KEY
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_APP_ID
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+        sync: false
+    healthCheckPath: /
+    autoDeploy: false

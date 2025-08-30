@@ -97,8 +97,8 @@ export default function RankingPage() {
                 <span className="text-white font-bold">?</span>
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">{user?.name || 'Usuário'}</h3>
-                <p className="text-sm text-gray-600">Nível {user?.level || 0} • {user?.xp?.toLocaleString() || '0'} XP</p>
+                <h3 className="font-medium text-gray-900">{user?.nome || user?.name || 'Usuário'}</h3>
+                <p className="text-sm text-gray-600">Nível {user?.level || 0} • {user?.xp && typeof user.xp === 'number' ? user.xp.toLocaleString() : '0'} XP</p>
               </div>
             </div>
             <div className="text-right">
@@ -170,7 +170,7 @@ export default function RankingPage() {
                       </h3>
                       <div className="flex items-center space-x-4 text-sm text-gray-600">
                         <span>Nível {entry.level}</span>
-                        <span>{entry.xp.toLocaleString()} XP</span>
+                        <span>{entry.xp && typeof entry.xp === 'number' ? entry.xp.toLocaleString() : '0'} XP</span>
                         <span>{entry.questionsAnswered} questões</span>
                       </div>
                     </div>

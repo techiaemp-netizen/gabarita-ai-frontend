@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiService } from '@/services/api';
 import { Performance } from '@/types';
+import PlanProtection from '../../components/PlanProtection';
 import { 
   BookOpen, 
   Trophy, 
@@ -60,12 +61,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <PlanProtection resource="relatorios">
+      <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Olá, {user && typeof user === 'object' && 'name' in user ? (user as any).name.split(' ')[0] : 'Usuário'}! 👋
+            Olá, {user?.nome?.split(' ')[0] || user?.name?.split(' ')[0] || 'Usuário'}! 👋
           </h1>
           <p className="text-gray-600">
             Bem-vindo de volta ao seu painel de estudos para o CNU 2025
@@ -88,7 +90,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-green-100 text-sm">XP Total</p>
-                <p className="text-3xl font-bold">{user && typeof user === 'object' && 'xp' in user ? (user as any).xp.toLocaleString() : '0'}</p>
+                <p className="text-3xl font-bold">{user && typeof user === 'object' && 'xp' in user && typeof (user as any).xp === 'number' ? (user as any).xp.toLocaleString() : '0'}</p>
               </div>
               <Zap className="h-8 w-8 text-green-200" />
             </div>
@@ -258,6 +260,7 @@ export default function DashboardPage() {
         )}
       </div>
     </div>
+    </PlanProtection>
   );
 }
 

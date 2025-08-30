@@ -146,7 +146,7 @@ export default function SignupPage() {
         level: 1,
         xp: 0,
         accuracy: 0,
-        plan: 'free'
+        plano: 'free'
       });
       router.push('/planos');
     } catch (err: any) {

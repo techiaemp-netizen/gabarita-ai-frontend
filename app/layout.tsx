@@ -6,6 +6,16 @@ import { AuthProvider } from '../contexts/AuthContext';
 import Navigation from '@/components/Navigation';
 import { useEffect, useState } from 'react';
 
+// Prevenir erro de custom element duplicado (TinyMCE)
+if (typeof window !== 'undefined') {
+  const originalDefine = window.customElements.define;
+  window.customElements.define = function(name, constructor, options) {
+    if (!window.customElements.get(name)) {
+      originalDefine.call(this, name, constructor, options);
+    }
+  };
+}
+
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({

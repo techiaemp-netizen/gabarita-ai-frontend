@@ -51,7 +51,7 @@ export default function Navigation() {
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2" prefetch={false}>
               <Image
                 src="/logo.png"
                 alt="Gabarit-AI"
@@ -72,7 +72,7 @@ export default function Navigation() {
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2" prefetch={false}>
               <Image 
                 src="/images/logo-oficial.jpg" 
                 alt="Gabarit-AI" 
@@ -87,12 +87,14 @@ export default function Navigation() {
               <Link 
                 href="/login" 
                 className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                prefetch={false}
               >
                 Entrar
               </Link>
               <Link 
                 href="/signup" 
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                prefetch={false}
               >
                 Cadastrar
               </Link>
@@ -108,7 +110,7 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/dashboard" className="flex items-center space-x-2">
+          <Link href="/dashboard" className="flex items-center space-x-2" prefetch={false}>
             <Image 
               src="/images/logo-oficial.jpg" 
               alt="Gabarit-AI" 
@@ -128,7 +130,7 @@ export default function Navigation() {
               </div>
               <div className="flex items-center space-x-1">
                 <span className="text-gray-500">XP</span>
-                <span className="font-bold text-green-600">{isClient ? user.xp.toLocaleString() : '...'}</span>
+                <span className="font-bold text-green-600">{isClient && user.xp && typeof user.xp === 'number' ? user.xp.toLocaleString() : '...'}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <span className="text-gray-500">ACERTOS</span>
@@ -141,7 +143,7 @@ export default function Navigation() {
 
             {/* Plan Status */}
             <div className="flex items-center space-x-2">
-              {user.plan === 'free' && (
+              {user.plano === 'free' && (
                 <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
                   ⚠️ Sem plano ativo
                 </span>
@@ -149,12 +151,14 @@ export default function Navigation() {
               <Link 
                 href="/desempenho"
                 className="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded-md text-sm font-medium"
+                prefetch={false}
               >
                 📊 Desempenho
               </Link>
               <Link 
                 href="/planos"
                 className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-md text-sm font-medium"
+                prefetch={false}
               >
                 💳 Planos
               </Link>
@@ -180,7 +184,7 @@ export default function Navigation() {
             <div className="flex justify-between items-center px-3 py-2 text-sm">
               <div className="flex space-x-4">
                 <span>Nível: <strong>{isClient ? user.level : '...'}</strong></span>
-                <span>XP: <strong>{isClient ? user.xp.toLocaleString() : '...'}</strong></span>
+                <span>XP: <strong>{isClient && user.xp && typeof user.xp === 'number' ? user.xp.toLocaleString() : '...'}</strong></span>
                 <span>Acertos: <strong>{isClient ? user.accuracy : '...'}%</strong></span>
               </div>
             </div>
@@ -194,6 +198,7 @@ export default function Navigation() {
                   href={item.href}
                   className="flex items-center space-x-3 px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                   onClick={() => setIsMenuOpen(false)}
+                  prefetch={false}
                 >
                   <Icon size={20} />
                   <span>{item.label}</span>

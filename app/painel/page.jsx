@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useAuth } from '../../utils/auth';
+import { useAuth } from '../../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import ProgressBar from '../../components/ProgressBar';
 import CardDesempenho from '../../components/CardDesempenho';
+import PlanProtection from '../../components/PlanProtection';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 /**
@@ -53,7 +54,7 @@ export default function PainelPage() {
     }
   }, [user]);
 
-  return (
+  const PainelContent = () => (
     <div className="p-4 flex flex-col space-y-6 flex-1">
       <div>
           <h2 className="text-xl font-medium mb-2">Sua Jornada</h2>
@@ -93,5 +94,11 @@ export default function PainelPage() {
         </div>
       </div>
     </div>
+  );
+
+  return (
+    <PlanProtection resource="relatorios">
+      <PainelContent />
+    </PlanProtection>
   );
 }

@@ -36,7 +36,7 @@ export default function LoginPage() {
       localStorage.setItem('authToken', token);
       
       // Redirecionar para dashboard
-      router.push('/dashboard');
+      router.push('/painel');
     } catch (err: any) {
       let errorMessage = 'Erro ao fazer login';
       
@@ -71,7 +71,7 @@ export default function LoginPage() {
       localStorage.setItem('authToken', token);
       
       // Redirecionar para dashboard
-      router.push('/dashboard');
+      router.push('/painel');
     } catch (err: any) {
       let errorMessage = 'Erro ao fazer login com Google';
       

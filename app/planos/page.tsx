@@ -58,10 +58,8 @@ export default function PlanosPage() {
       const response = await apiService.getPlans();
       
       if (response.success && Array.isArray(response.data)) {
-        console.log('Planos carregados com sucesso:', response.data.length, 'planos');
         setPlans(response.data);
       } else {
-        console.error('Resposta da API invalida:', response);
         setPlans([]);
       }
     } catch (error) {
@@ -73,35 +71,46 @@ export default function PlanosPage() {
   };
 
   const handleSubscribe = async (planId: string) => {
+    console.log('🔍 Plano selecionado:', planId);
+    
     if (!user) {
-      alert('Voce precisa estar logado para assinar um plano');
+      console.log('❌ Usuário não logado, redirecionando para login');
+      router.push('/login');
       return;
     }
 
+    // Para plano gratuito, apenas mostra mensagem informativa
     if (planId === 'gratuito') {
-      alert('Voce ja tem acesso ao plano gratuito!');
+      alert('Você já tem acesso ao plano gratuito! Faça login para começar a usar.');
       return;
     }
 
+    // Para todos os outros planos, direciona para pagamento no Mercado Pago
+    console.log('💳 Iniciando processo de pagamento para plano:', planId);
     setProcessingPayment(planId);
+    
     try {
+      console.log('🚀 Chamando API de pagamento Mercado Pago para planId:', planId);
       const response = await apiService.createPayment(planId);
+      console.log('📋 Resposta da API de pagamento:', response);
+      
       if (response.success && response.data?.paymentUrl) {
-        window.open(response.data.paymentUrl, '_blank');
+        console.log('✅ Redirecionando para pagamento Mercado Pago:', response.data.paymentUrl);
+        // Redireciona para o Mercado Pago
+        window.location.href = response.data.paymentUrl;
       } else {
+        console.error('❌ Erro na resposta da API de pagamento:', response);
         alert('Erro ao processar pagamento. Tente novamente.');
       }
     } catch (error) {
-      console.error('Erro ao processar pagamento:', error);
-      alert('Erro ao processar pagamento. Tente novamente.');
+      console.error('❌ Erro ao criar pagamento:', error);
+      alert('Erro ao conectar com o sistema de pagamento. Tente novamente.');
     } finally {
       setProcessingPayment(null);
     }
   };
 
-  const handleContinueWithFree = () => {
-    router.push('/dashboard');
-  };
+
 
   const getPlanDetails = (planName: string, planId: string) => {
     const planDetails = {
@@ -172,6 +181,7 @@ export default function PlanosPage() {
             Acelere sua preparacao para concursos com nossos planos premium. 
             Acesso completo a simulados, relatorios detalhados e muito mais!
           </p>
+
         </div>
 
         {user && (
@@ -269,12 +279,12 @@ export default function PlanosPage() {
                   {processingPayment === plan.id ? (
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current mr-2"></div>
-                      Processando...
+                      Processando pagamento...
                     </div>
                   ) : plan.preco === 0 ? (
-                    'Continuar Gratuito'
+                    'Plano Gratuito'
                   ) : (
-                    `Assinar por R$ ${plan.preco.toFixed(2)}`
+                    `Comprar por R$ ${typeof plan.preco === 'number' ? plan.preco.toFixed(2) : '0.00'}`
                   )}
                 </button>
               </div>
@@ -282,7 +292,6 @@ export default function PlanosPage() {
           )) : (
             <div className="col-span-full text-center py-12">
               <p className="text-gray-600 text-lg">Nenhum plano disponivel no momento.</p>
-              <p className="text-gray-500 text-sm mt-2">Planos carregados: {JSON.stringify(plans)}</p>
             </div>
           )}
         </div>
@@ -333,14 +342,11 @@ export default function PlanosPage() {
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
             <h2 className="text-3xl font-bold mb-4">Pronto para acelerar seus estudos?</h2>
             <p className="text-xl mb-6 opacity-90">
-              Junte-se a milhares de candidatos que ja estao se preparando conosco!
+              Escolha o plano ideal para sua preparação e comece a estudar com nossa plataforma!
             </p>
-            <button
-              onClick={handleContinueWithFree}
-              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-            >
-              Comecar Agora
-            </button>
+            <p className="text-lg opacity-80">
+              Todos os planos premium incluem acesso completo aos recursos da plataforma.
+            </p>
           </div>
         </div>
       </div>

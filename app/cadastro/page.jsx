@@ -38,23 +38,60 @@ export default function CadastroPage() {
     }
   }, [user, loading, router]);
 
-  // Carregar opções de cargos e blocos
+  // Dados de fallback para quando a API falha
+  const dadosFallback = {
+    todos_cargos: [
+      'Enfermeiro',
+      'Técnico em Enfermagem',
+      'Médico',
+      'Fisioterapeuta',
+      'Nutricionista',
+      'Psicólogo',
+      'Assistente Social',
+      'Farmacêutico',
+      'Analista Administrativo',
+      'Técnico Administrativo'
+    ]
+  };
+
+  // Carregar opções de cargos e blocos com fallback robusto
   useEffect(() => {
     const carregarOpcoes = async () => {
       console.log('🔄 Iniciando carregamento de cargos e blocos...');
+      
       try {
         const response = await apiService.getCargosEBlocos();
         console.log('📥 Resposta da API getCargosEBlocos:', response);
         
-        if (response.success && response.data) {
-           console.log('✅ Dados carregados com sucesso:', response.data);
-           console.log('📋 Cargos disponíveis:', response.data.todos_cargos);
-           setCargosOpcoes(response.data.todos_cargos);
-         } else {
-           console.error('❌ Erro ao carregar opções:', response.error);
-         }
+        if (response.success && response.data && response.data.todos_cargos?.length > 0) {
+          console.log('✅ Dados carregados com sucesso:', response.data);
+          console.log('📋 Cargos disponíveis:', response.data.todos_cargos);
+          setCargosOpcoes(response.data.todos_cargos);
+        } else {
+          console.warn('⚠️ API retornou dados inválidos, usando fallback');
+          console.log('🔄 Ativando modo fallback com dados básicos');
+          setCargosOpcoes(dadosFallback.todos_cargos);
+          
+          // Mostrar notificação amigável ao usuário
+          if (response.error?.includes('timeout') || response.error?.includes('Timeout')) {
+            console.log('⏰ Timeout detectado - usando dados offline');
+          }
+        }
       } catch (error) {
         console.error('💥 Erro ao carregar opções:', error);
+        console.log('🛡️ Ativando modo de recuperação com dados de fallback');
+        
+        // Sempre usar fallback em caso de erro
+        setCargosOpcoes(dadosFallback.todos_cargos);
+        
+        // Log detalhado do erro
+        const errorDetails = {
+          message: error.message,
+          isTimeout: error.message?.includes('timeout') || error.code === 'ECONNABORTED',
+          isNetworkError: error.message?.includes('fetch') || error.message?.includes('network')
+        };
+        console.log('🔍 Detalhes do erro:', errorDetails);
+        
       } finally {
         console.log('🏁 Finalizando carregamento de opções');
         setCarregandoOpcoes(false);
@@ -64,7 +101,21 @@ export default function CadastroPage() {
     carregarOpcoes();
   }, []);
 
-  // Carregar blocos quando cargo for selecionado
+  // Dados de fallback para blocos por cargo
+  const blocosFallback = {
+    'Enfermeiro': ['SUS', 'Enfermagem', 'Saúde Pública', 'Ética Profissional'],
+    'Técnico em Enfermagem': ['SUS', 'Técnicas de Enfermagem', 'Saúde Pública'],
+    'Médico': ['SUS', 'Medicina Clínica', 'Saúde Pública', 'Ética Médica'],
+    'Fisioterapeuta': ['SUS', 'Fisioterapia', 'Reabilitação', 'Anatomia'],
+    'Nutricionista': ['SUS', 'Nutrição', 'Saúde Pública', 'Dietética'],
+    'Psicólogo': ['SUS', 'Psicologia', 'Saúde Mental', 'Ética Profissional'],
+    'Assistente Social': ['SUS', 'Serviço Social', 'Políticas Públicas'],
+    'Farmacêutico': ['SUS', 'Farmácia', 'Farmacologia', 'Ética Profissional'],
+    'Analista Administrativo': ['Administração Pública', 'Direito Administrativo', 'Gestão'],
+    'Técnico Administrativo': ['Administração', 'Atendimento ao Público', 'Informática']
+  };
+
+  // Carregar blocos quando cargo for selecionado com fallback
   useEffect(() => {
     const carregarBlocos = async () => {
       if (!formData.cargo) {
@@ -74,20 +125,37 @@ export default function CadastroPage() {
       }
 
       console.log('🔄 Carregando blocos para o cargo:', formData.cargo);
+      
       try {
         const response = await apiService.getBlocosPorCargo(formData.cargo);
         console.log('📥 Resposta da API getBlocosPorCargo:', response);
         
-        if (response.success && response.data) {
-           console.log('✅ Blocos carregados com sucesso:', response.data.blocos);
-           setBlocosOpcoes(response.data.blocos);
-         } else {
-           console.error('❌ Erro ao carregar blocos:', response.error);
-           setBlocosOpcoes([]);
-         }
+        if (response.success && response.data && response.data.blocos?.length > 0) {
+          console.log('✅ Blocos carregados com sucesso:', response.data.blocos);
+          setBlocosOpcoes(response.data.blocos);
+        } else {
+          console.warn('⚠️ API não retornou blocos válidos, usando fallback');
+          const blocosFallbackCargo = blocosFallback[formData.cargo] || ['Conhecimentos Gerais'];
+          console.log('🔄 Usando blocos de fallback:', blocosFallbackCargo);
+          setBlocosOpcoes(blocosFallbackCargo);
+        }
       } catch (error) {
         console.error('💥 Erro ao carregar blocos:', error);
-        setBlocosOpcoes([]);
+        console.log('🛡️ Ativando modo de recuperação para blocos');
+        
+        // Usar fallback baseado no cargo selecionado
+        const blocosFallbackCargo = blocosFallback[formData.cargo] || ['Conhecimentos Gerais'];
+        console.log('🔄 Usando blocos de fallback para erro:', blocosFallbackCargo);
+        setBlocosOpcoes(blocosFallbackCargo);
+        
+        // Log detalhado do erro
+        const errorDetails = {
+          cargo: formData.cargo,
+          message: error.message,
+          isTimeout: error.message?.includes('timeout') || error.code === 'ECONNABORTED',
+          fallbackUsed: blocosFallbackCargo
+        };
+        console.log('🔍 Detalhes do erro ao carregar blocos:', errorDetails);
       }
     };
 
@@ -96,27 +164,42 @@ export default function CadastroPage() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log('📝 Mudança no formulário:', { campo: name, valor: value });
     
     // Se o cargo mudou, limpar o bloco selecionado
     if (name === 'cargo') {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value,
-        bloco: '' // Limpar bloco quando cargo muda
-      }));
+      console.log('🔄 Cargo alterado, limpando bloco selecionado');
+      setFormData(prev => {
+        const novoFormData = {
+          ...prev,
+          [name]: value,
+          bloco: '' // Limpar bloco quando cargo muda
+        };
+        console.log('📊 Estado do formulário após mudança de cargo:', novoFormData);
+        return novoFormData;
+      });
     } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+      setFormData(prev => {
+        const novoFormData = {
+          ...prev,
+          [name]: value
+        };
+        console.log('📊 Estado do formulário atualizado:', { campo: name, novoValor: value });
+        return novoFormData;
+      });
     }
     
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+      console.log('🧹 Limpando erro do campo:', name);
+      setErrors(prev => {
+        const novosErros = {
+          ...prev,
+          [name]: ''
+        };
+        console.log('📊 Erros após limpeza:', novosErros);
+        return novosErros;
+      });
     }
   };
 
@@ -128,11 +211,18 @@ export default function CadastroPage() {
   };
 
   const handleCPFChange = (e) => {
-    const formatted = formatCPF(e.target.value);
-    setFormData(prev => ({
-      ...prev,
-      cpf: formatted
-    }));
+    const valorOriginal = e.target.value;
+    const formatted = formatCPF(valorOriginal);
+    console.log('📱 Formatação CPF:', { original: valorOriginal, formatado: formatted });
+    
+    setFormData(prev => {
+      const novoFormData = {
+        ...prev,
+        cpf: formatted
+      };
+      console.log('📊 CPF atualizado no estado:', formatted);
+      return novoFormData;
+    });
   };
 
   const validateForm = () => {
@@ -180,21 +270,33 @@ export default function CadastroPage() {
       newErrors.bloco = 'Bloco é obrigatório';
     }
 
+    console.log('📋 Resultado da validação:', {
+      totalErros: Object.keys(newErrors).length,
+      erros: newErrors,
+      formularioValido: Object.keys(newErrors).length === 0
+    });
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('🚀 Iniciando processo de cadastro');
+    console.log('📊 Dados do formulário antes da validação:', formData);
     
     if (!validateForm()) {
+      console.log('❌ Validação falhou, interrompendo cadastro');
       return;
     }
 
+    console.log('✅ Validação passou, iniciando cadastro');
+    console.log('⏳ Definindo estado de submissão como true');
     setIsSubmitting(true);
     
     try {
       // 1. Criar conta no Firebase Auth
+      console.log('🔥 Criando conta no Firebase Auth...');
       const userCredential = await createUserWithEmailAndPassword(
         auth, 
         formData.email, 
@@ -202,14 +304,22 @@ export default function CadastroPage() {
       );
       
       const firebaseUser = userCredential.user;
+      console.log('✅ Conta Firebase criada com sucesso:', {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email
+      });
       
       // 2. Atualizar perfil do Firebase com nome
+      console.log('👤 Atualizando perfil do Firebase...');
       await updateProfile(firebaseUser, {
         displayName: formData.nomeCompleto
       });
+      console.log('✅ Perfil Firebase atualizado com nome:', formData.nomeCompleto);
       
       // 3. Obter token do Firebase
+      console.log('🔑 Obtendo token de autenticação...');
       const token = await firebaseUser.getIdToken();
+      console.log('✅ Token obtido com sucesso (primeiros 20 chars):', token.substring(0, 20) + '...');
       
       // 4. Preparar dados para envio ao backend
       const dadosCadastro = {
@@ -222,47 +332,73 @@ export default function CadastroPage() {
         firebaseUid: firebaseUser.uid
       };
 
-      console.log('Enviando dados do cadastro para backend:', dadosCadastro);
-      console.log('Token Firebase:', token);
+      console.log('🚀 === PAYLOAD SIGNUP ===');
+      console.log('📦 Payload:', JSON.stringify(dadosCadastro, null, 2));
+      console.log('🔑 Token Firebase:', token);
+      console.log('🌐 URL Backend:', 'https://gabarita-ai-backend.onrender.com/api/auth/cadastro');
+      console.log('========================');
       
       // 5. Enviar dados para o backend com token de autenticação
+      console.log('🌐 Enviando dados para o backend...');
       const response = await apiService.signup(dadosCadastro, token);
       
-      console.log('Resposta do backend:', response);
+      console.log('📥 Resposta completa do backend:', response);
       
       if (response.success) {
-        console.log('Cadastro realizado com sucesso!');
+        console.log('🎉 Cadastro realizado com sucesso no backend!');
+        console.log('💾 Salvando token no localStorage...');
         // Salvar token no localStorage
         localStorage.setItem('authToken', token);
         
-        // Redirecionar para dashboard
-        router.push('/dashboard?message=Cadastro realizado com sucesso!');
+        console.log('🔄 Redirecionando para painel principal...');
+        // Redirecionar para painel principal
+        router.push('/painel?message=Cadastro realizado com sucesso!');
       } else {
-        console.error('Erro no backend:', response.error);
+        console.error('❌ Erro no backend:', response.error);
+        console.log('🗑️ Tentando deletar conta Firebase devido ao erro no backend...');
         // Se falhou no backend, deletar conta do Firebase
         try {
           await firebaseUser.delete();
-          console.log('Conta Firebase deletada após erro no backend');
+          console.log('✅ Conta Firebase deletada após erro no backend');
         } catch (deleteError) {
-          console.error('Erro ao deletar conta Firebase:', deleteError);
+          console.error('💥 Erro ao deletar conta Firebase:', deleteError);
         }
+        console.log('📝 Definindo erro para exibição ao usuário');
+        // Exibir a mensagem exata do backend
         setErrors({ submit: response.error || 'Erro ao criar conta. Tente novamente.' });
       }
     } catch (error) {
-      console.error('Erro no cadastro:', error);
+      console.error('💥 Erro geral no processo de cadastro:', error);
+      console.log('🔍 Analisando tipo de erro...');
       
       let errorMessage = 'Erro ao criar conta. Tente novamente.';
       
+      // Verificar se é erro do Firebase Auth
       if (error.code === 'auth/email-already-in-use') {
+        console.log('🚫 Erro: E-mail já está em uso');
         errorMessage = 'Este e-mail já está em uso.';
       } else if (error.code === 'auth/weak-password') {
+        console.log('🔒 Erro: Senha muito fraca');
         errorMessage = 'A senha deve ter pelo menos 6 caracteres.';
       } else if (error.code === 'auth/invalid-email') {
+        console.log('📧 Erro: E-mail inválido');
         errorMessage = 'E-mail inválido.';
+      } else if (error.response?.data?.erro) {
+        console.log('🌐 Erro do backend capturado:', error.response.data.erro);
+        // Capturar erro do backend se disponível
+        errorMessage = error.response.data.erro;
+      } else if (error.message) {
+        console.log('⚠️ Erro genérico capturado:', error.message);
+        // Capturar mensagem de erro genérica
+        errorMessage = error.message;
+      } else {
+        console.log('❓ Erro desconhecido, usando mensagem padrão');
       }
       
+      console.log('📝 Definindo mensagem de erro final:', errorMessage);
       setErrors({ submit: errorMessage });
     } finally {
+      console.log('🏁 Finalizando processo de cadastro, definindo isSubmitting como false');
       setIsSubmitting(false);
     }
   };

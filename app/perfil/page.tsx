@@ -144,7 +144,7 @@ export default function PerfilPage() {
               <div className="text-sm text-gray-600">Nível</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-1">{user.xp.toLocaleString()}</div>
+              <div className="text-3xl font-bold text-green-600 mb-1">{user.xp && typeof user.xp === 'number' ? user.xp.toLocaleString() : '0'}</div>
               <div className="text-sm text-gray-600">XP Total</div>
             </div>
             <div className="text-center">
@@ -153,7 +153,7 @@ export default function PerfilPage() {
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-orange-600 mb-1">
-                {user.plan === 'free' ? 'Gratuito' : 'Premium'}
+                {user.plano === 'free' ? 'Gratuito' : 'Premium'}
               </div>
               <div className="text-sm text-gray-600">Plano</div>
             </div>
