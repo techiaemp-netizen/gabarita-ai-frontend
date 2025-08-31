@@ -9,6 +9,7 @@ import {
   News, 
   ApiResponse 
 } from '@/types';
+import { configManager, apiConfig } from '@/config/app';
 
 // Interface para o Circuit Breaker
 interface CircuitBreakerState {
@@ -40,27 +41,27 @@ class ApiService {
   private loadingStates: Map<string, Promise<any>> = new Map();
   
   // Configurações do sistema robusto
-  private readonly CIRCUIT_BREAKER_THRESHOLD = 5;
-  private readonly CIRCUIT_BREAKER_TIMEOUT = 60000; // 1 minuto
-  private readonly DEFAULT_CACHE_TTL = 300000; // 5 minutos
+  private readonly CIRCUIT_BREAKER_THRESHOLD = apiConfig.circuitBreakerThreshold;
+  private readonly CIRCUIT_BREAKER_TIMEOUT = apiConfig.circuitBreakerTimeout;
+  private readonly DEFAULT_CACHE_TTL = apiConfig.cacheDefaultTtl;
   
   private readonly DEFAULT_RETRY_CONFIG: RetryConfig = {
-    maxRetries: 3,
-    baseDelay: 1000,
-    maxDelay: 10000,
+    maxRetries: apiConfig.retryAttempts,
+    baseDelay: apiConfig.retryDelay,
+    maxDelay: apiConfig.maxRetryDelay,
     backoffMultiplier: 2,
     retryableErrors: ['ECONNABORTED', 'ENOTFOUND', 'ECONNRESET', 'ETIMEDOUT']
   };
 
   constructor() {
-    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'https://gabarita-ai-backend.onrender.com';
+    const baseURL = configManager.getApiBaseUrl();
     
     this.api = axios.create({
       baseURL,
       headers: {
         'Content-Type': 'application/json',
       },
-      timeout: 30000, // Aumentado de 10s para 30s
+      timeout: configManager.getApiTimeout(),
     });
 
     // Interceptor para adicionar token de autenticação
@@ -643,6 +644,27 @@ class ApiService {
     } catch (error) {
       console.error('🔍 DEBUG getCurrentUser: error parsing userData:', error);
       return null;
+    }
+  }
+
+  // Planos - Assinatura direta
+  async subscribePlan(planId: string, paymentMethod: string = 'pix'): Promise<ApiResponse<any>> {
+    try {
+      console.log('📋 Assinando plano:', planId, 'com método:', paymentMethod);
+      
+      const response = await this.api.post('/api/planos/subscribe', {
+        tipo_plano: planId,
+        metodo_pagamento: paymentMethod
+      });
+      
+      console.log('✅ Plano assinado com sucesso:', response.data);
+      return { success: true, data: response.data };
+    } catch (error: any) {
+      console.error('❌ Erro ao assinar plano:', error);
+      return {
+        success: false,
+        error: error.response?.data?.message || error.response?.data?.erro || 'Erro ao assinar plano'
+      };
     }
   }
 
