@@ -812,7 +812,7 @@ class ApiService {
     console.log('🚀 Iniciando getCargosEBlocos com sistema robusto...');
     
     try {
-      const responseData = await this.robustRequest<any>('GET', '/api/opcoes/blocos-cargos', {
+      const responseData = await this.robustRequest<any>('GET', '/api/opcoes/cargos-blocos', {
         useCache: true,
         cacheTtl: 600000, // 10 minutos para dados de configuração
         retryConfig: {
@@ -991,7 +991,7 @@ class ApiService {
   // Novos métodos para ordem invertida (blocos primeiro)
   async getBlocosCargos(): Promise<ApiResponse<{ blocos_cargos: Record<string, string[]>; todos_blocos: string[]; todos_cargos: string[] }>> {
     try {
-      const response = await this.api.get('/api/opcoes/blocos-cargos');
+      const response = await this.api.get('/api/opcoes/cargos-blocos');
       console.log('🔍 Resposta bruta da API:', response.data);
       if (response.data && response.data.dados) {
         return { success: true, data: response.data.dados };

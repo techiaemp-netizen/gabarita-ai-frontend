@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
                       process.env.NEXT_PUBLIC_BACKEND_URL || 
                       'https://gabarita-ai-backend.onrender.com';
     
-    const backendUrl = `${apiBaseUrl}/api/opcoes/blocos-cargos`;
+    const backendUrl = `${apiBaseUrl}/api/opcoes/cargos-blocos`;
     
     console.log('📡 === CONFIGURAÇÃO DA REQUISIÇÃO ===');
     console.log('📡 API Base URL utilizada:', apiBaseUrl);

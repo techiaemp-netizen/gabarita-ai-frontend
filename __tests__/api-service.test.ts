@@ -80,7 +80,7 @@ describe('Sistema Robusto - Testes Básicos', () => {
       
       // Verificar se o método existe e pode ser chamado
       expect(typeof apiService.resetCircuitBreaker).toBe('function');
-      expect(() => apiService.resetCircuitBreaker('/api/opcoes/blocos-cargos')).not.toThrow();
+      expect(() => apiService.resetCircuitBreaker('/api/opcoes/cargos-blocos')).not.toThrow();
       expect(() => apiService.resetCircuitBreaker()).not.toThrow();
     });
 
