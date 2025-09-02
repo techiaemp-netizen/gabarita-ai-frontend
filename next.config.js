@@ -8,6 +8,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Configuração para Docker deployment
+  output: 'standalone',
   // Configurações básicas para estabilidade
   swcMinify: true,
   reactStrictMode: false,
