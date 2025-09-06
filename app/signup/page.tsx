@@ -25,28 +25,31 @@ export default function SignupPage() {
   const [blocosOpcoes, setBlocosOpcoes] = useState<string[]>([]);
   const [cargosOpcoes, setCargosOpcoes] = useState<string[]>([]);
   const [carregandoOpcoes, setCarregandoOpcoes] = useState(true);
+  const [opcoesError, setOpcoesError] = useState('');
   
   const { signup } = useAuth();
   const router = useRouter();
 
+  const carregarOpcoes = async () => {
+    setCarregandoOpcoes(true);
+    setOpcoesError('');
+    try {
+      const response = await apiService.getBlocosCargos();
+
+      if (response.success && response.data) {
+        setBlocosOpcoes(response.data.todos_blocos);
+      } else {
+        setOpcoesError('Não foi possível carregar as opções.');
+      }
+    } catch (error) {
+      setOpcoesError('Não foi possível carregar as opções.');
+    } finally {
+      setCarregandoOpcoes(false);
+    }
+  };
+
   // Carregar opções de blocos (nova ordem)
   useEffect(() => {
-    const carregarOpcoes = async () => {
-      try {
-        const response = await apiService.getBlocosCargos();
-        
-        if (response.success && response.data) {
-          setBlocosOpcoes(response.data.todos_blocos);
-        } else {
-          console.error('Erro ao carregar opções:', response.error);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar opções:', error);
-      } finally {
-        setCarregandoOpcoes(false);
-      }
-    };
-
     carregarOpcoes();
   }, []);
 
@@ -173,6 +176,18 @@ export default function SignupPage() {
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {opcoesError && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm flex items-center justify-between">
+                <span>{opcoesError}</span>
+                <button
+                  type="button"
+                  onClick={carregarOpcoes}
+                  className="ml-4 text-red-700 underline"
+                >
+                  Tentar novamente
+                </button>
+              </div>
+            )}
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
                 {error}
@@ -229,27 +244,33 @@ export default function SignupPage() {
               <label htmlFor="bloco" className="block text-sm font-medium text-indigo-700 mb-2">
                 Bloco
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Building className="h-5 w-5 text-gray-400" />
+              {carregandoOpcoes ? (
+                <div className="flex justify-center py-3">
+                  <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
-                <select
-                  id="bloco"
-                  name="bloco"
-                  required
-                  value={formData.bloco}
-                  onChange={handleSelectChange}
-                  disabled={carregandoOpcoes}
-                  className="block w-full pl-10 pr-3 py-3 border-2 border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent appearance-none bg-white"
-                >
-                  <option value="">Selecione um bloco</option>
-                  {blocosOpcoes.map((bloco) => (
-                    <option key={bloco} value={bloco}>
-                      {bloco}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              ) : (
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Building className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <select
+                    id="bloco"
+                    name="bloco"
+                    required
+                    value={formData.bloco}
+                    onChange={handleSelectChange}
+                    disabled={carregandoOpcoes}
+                    className="block w-full pl-10 pr-3 py-3 border-2 border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent appearance-none bg-white"
+                  >
+                    <option value="">Selecione um bloco</option>
+                    {blocosOpcoes.map((bloco) => (
+                      <option key={bloco} value={bloco}>
+                        {bloco}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
 
             {/* Cargo */}
